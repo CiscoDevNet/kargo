@@ -1,3 +1,4 @@
+---
 dependencies:
   - {role: kubernetes-apps/ansible, tags: apps}
   - {role: kubernetes-apps/kpm, tags: [apps, kpm]}
