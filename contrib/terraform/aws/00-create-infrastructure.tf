@@ -18,11 +18,6 @@ variable "numNodes" {
   description = "Desired # of nodes."
 }
 
-variable "numJump" {
-  type = "string"
-  description = "Desired # of jump host."
-}
-
 
 variable "volSizeController" {
   type = "string"
@@ -39,10 +34,6 @@ variable "volSizeNodes" {
   description = "Volume size for nodes (GB)."
 }
 
-variable "volSizeJump" {
-  type = "string"
-  description = "Volume size for jump (GB)."
-}
 
 #variable "subnet" {
 #  type = "string"
@@ -78,11 +69,6 @@ variable "etcd_instance_type" {
 variable "node_instance_type" {
   type = "string"
   description = "Size of VM to use for nodes."
-}
-
-variable "jump_instance_type" {
-  type = "string"
-  description = "Size of VM to use for jump."
 }
 
 variable "terminate_protect" {
@@ -296,35 +282,7 @@ resource "aws_instance" "minion" {
       Name = "${var.deploymentName}-minion-${count.index + 1}"
     }
 }
-resource "aws_instance" "jump" {
-    count = "${var.numJump}"
-    ami = "${var.ami}"
-    instance_type = "${var.jump_instance_type}"
-    subnet_id = "${module.vpc.subnet}"
-    vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
-    key_name = "${module.ssh-key.ssh_key_name}"
-    disable_api_termination = "${var.terminate_protect}"
-    iam_instance_profile = "${aws_iam_instance_profile.kubernetes_node_profile.id}"
-	associate_public_ip_address = true
-    root_block_device {
-      volume_size = "${var.volSizeJump}"
-    }
-    tags {
-      Name = "${var.deploymentName}-jump-${count.index + 1}"
-    }
-	provisioner "remote-exec"{
-		inline = [
-		"sudo rpm -iUvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
-		"sudo yum  install -y python-netaddr ansible git",
-		"git clone https://github.com/npateriya/kargo"
-		]
-		connection{
-			type = "ssh"
-			user= "${var.ssh_username}"
-			private_key = "${file("/Users/neeleshpateriya/.ssh/id_rsa_devnet")}"
-		}
-	}
-}
+
 
 output "kubernetes_master_profile" {
   value = "${aws_iam_instance_profile.kubernetes_master_profile.id}"

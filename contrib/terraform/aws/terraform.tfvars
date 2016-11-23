@@ -16,6 +16,7 @@ ami="ami-6d1c2007"
 #securityGroups="sg-0e41cd73"
 SSHUser="centos"
 SSHKey="/Users/neeleshpateriya/.ssh/id_rsa_devnet.pub"
+SSHPrivKey="/Users/neeleshpateriya/.ssh/id_rsa_devnet"
 
 master_instance_type="m3.medium"
 etcd_instance_type="m3.medium"
