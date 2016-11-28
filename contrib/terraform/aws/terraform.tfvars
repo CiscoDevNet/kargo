@@ -2,7 +2,7 @@ deploymentName="stage-kargo-k8s"
 
 numControllers="2"
 numEtcd="3"
-numNodes="2"
+numNodes="3"
 numJump="1"
 
 volSizeController="20"
