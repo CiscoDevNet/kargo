@@ -23,8 +23,9 @@ resource "aws_instance" "jump" {
     count = "${var.numJump}"
     ami = "${var.ami}"
     instance_type = "${var.jump_instance_type}"
-    subnet_id = "${module.vpc.subnet}"
-    vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
+    #subnet_id = "${module.vpc.subnet}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids), count.index)}"
+	vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
     key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
     iam_instance_profile = "${aws_iam_instance_profile.kubernetes_node_profile.id}"
@@ -39,7 +40,8 @@ resource "aws_instance" "jump" {
         inline = [
         "sudo rpm -iUvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
         "sudo yum  install -y python-netaddr ansible git",
-        "git clone https://github.com/npateriya/kargo"
+        "git clone https://github.com/CiscoDevnet/kargo",
+		"cd kargo; git fetch; git checkout origin devnet; cd ~"
 		]
         connection{
             user= "${var.ssh_username}"
@@ -62,8 +64,8 @@ resource "aws_instance" "jump" {
             private_key = "${file("${var.SSHPrivKey}")}"
 		}
 	}
-	 provisioner "remote-exec"{
-        inline = [
+	provisioner "remote-exec"{
+       inline = [
         "chmod 600 ~/.ssh/id_rsa",
         "sudo yum  install -y python-netaddr ansible git",
         "ANSIBLE_CONFIG=~/kargo/ansible.cfg ansible-playbook  -i inventory -e @kargo/inventory/group_vars/all.yml kargo/cluster.yml --become"

@@ -233,7 +233,8 @@ resource "aws_instance" "master" {
     count = "${var.numControllers}"
     ami = "${var.ami}"
     instance_type = "${var.master_instance_type}"
-    subnet_id = "${module.vpc.subnet}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids), count.index)}"
+    #subnet_id = "${module.vpc.subnet}"
     vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
     key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
@@ -251,11 +252,12 @@ resource "aws_instance" "etcd" {
     count = "${var.numEtcd}"
     ami = "${var.ami}"
     instance_type = "${var.etcd_instance_type}"
-    subnet_id = "${module.vpc.subnet}"
+    #subnet_id = "${module.vpc.subnet}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids), count.index)}"
     vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
     key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
-	associate_public_ip_address = true
+	#associate_public_ip_address = true
     root_block_device {
       volume_size = "${var.volSizeEtcd}"
     }
@@ -269,12 +271,13 @@ resource "aws_instance" "minion" {
     count = "${var.numNodes}"
     ami = "${var.ami}"
     instance_type = "${var.node_instance_type}"
-    subnet_id = "${module.vpc.subnet}"
+    #subnet_id = "${module.vpc.subnet}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids), count.index)}"
     vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
     key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
     iam_instance_profile = "${aws_iam_instance_profile.kubernetes_node_profile.id}"
-	associate_public_ip_address = true
+	#associate_public_ip_address = true
     root_block_device {
       volume_size = "${var.volSizeNodes}"
     }
