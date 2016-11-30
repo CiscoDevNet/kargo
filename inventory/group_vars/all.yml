@@ -22,13 +22,13 @@ kube_cert_group: kube-cert
 kube_log_level: 2
 
 # Users to create for basic auth in Kubernetes API via HTTP
-kube_api_pwd: "changeme"
+kube_api_pwd: "cRU*wu3Ra6Ah"
 kube_users:
   kube:
     pass: "{{kube_api_pwd}}"
     role: admin
   root:
-    pass: "changeme"
+    pass: "cRU*wu3Ra6Ah"
     role: admin
 
 # Kubernetes cluster name, also will be used as DNS domain

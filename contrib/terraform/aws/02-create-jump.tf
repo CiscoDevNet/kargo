@@ -67,8 +67,8 @@ resource "aws_instance" "jump" {
 	provisioner "remote-exec"{
        inline = [
         "chmod 600 ~/.ssh/id_rsa",
-        "sudo yum  install -y python-netaddr ansible git",
-        "ANSIBLE_CONFIG=~/kargo/ansible.cfg ansible-playbook  -i inventory -e @kargo/inventory/group_vars/all.yml kargo/cluster.yml --become"
+        "sudo yum  install -y python-netaddr ansible git"#,
+        #"ANSIBLE_CONFIG=~/kargo/ansible.cfg ansible-playbook  -i inventory -e @kargo/inventory/group_vars/all.yml kargo/cluster.yml --become"
 		]
         connection{
             user= "${var.ssh_username}"
