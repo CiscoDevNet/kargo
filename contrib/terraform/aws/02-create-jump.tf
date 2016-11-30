@@ -76,3 +76,10 @@ resource "aws_instance" "jump" {
 		}
 	}
 }
+output "jump-ip" {
+    value = "${join(", ", aws_instance.jump.*.private_ip)}"
+}
+
+output "jump-public-ip" {
+    value = "${join(", ", aws_instance.jump.*.public_ip)}"
+}

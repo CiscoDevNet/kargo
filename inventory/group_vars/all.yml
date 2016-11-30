@@ -126,7 +126,7 @@ dns_server: "{{ kube_service_addresses|ipaddr('net')|ipaddr(2)|ipaddr('address')
 # If set the possible values are either 'gce', 'aws' or 'openstack'
 # When openstack is used make sure to source in the openstack credentials
 # like you would do when using nova-client before starting the playbook.
-# cloud_provider:
+cloud_provider: "aws"
 
 ## Set these proxy values in order to update docker daemon to use proxies
 # http_proxy: ""

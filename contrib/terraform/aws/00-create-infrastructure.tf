@@ -298,13 +298,23 @@ output "kubernetes_node_profile" {
 output "master-ip" {
     value = "${join(", ", aws_instance.master.*.private_ip)}"
 }
+output "master-public-ip" {
+    value = "${join(", ", aws_instance.master.*.public_ip)}"
+}
 
 output "etcd-ip" {
     value = "${join(", ", aws_instance.etcd.*.private_ip)}"
+}
+
+output "etcd-public-ip" {
+    value = "${join(", ", aws_instance.etcd.*.public_ip)}"
 }
 
 output "minion-ip" {
     value = "${join(", ", aws_instance.minion.*.private_ip)}"
 }
 
+output "minion-public-ip" {
+    value = "${join(", ", aws_instance.minion.*.public_ip)}"
+}
 
