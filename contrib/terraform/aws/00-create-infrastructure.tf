@@ -257,7 +257,7 @@ resource "aws_instance" "etcd" {
     vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
     key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
-	#associate_public_ip_address = true
+	associate_public_ip_address = true
     root_block_device {
       volume_size = "${var.volSizeEtcd}"
     }
@@ -277,7 +277,7 @@ resource "aws_instance" "minion" {
     key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
     iam_instance_profile = "${aws_iam_instance_profile.kubernetes_node_profile.id}"
-	#associate_public_ip_address = true
+	associate_public_ip_address = true
     root_block_device {
       volume_size = "${var.volSizeNodes}"
     }
