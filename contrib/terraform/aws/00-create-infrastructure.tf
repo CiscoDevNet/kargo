@@ -18,6 +18,7 @@ variable "numNodes" {
   description = "Desired # of nodes."
 }
 
+
 variable "volSizeController" {
   type = "string"
   description = "Volume size for the controllers (GB)."
@@ -33,15 +34,16 @@ variable "volSizeNodes" {
   description = "Volume size for nodes (GB)."
 }
 
-variable "subnet" {
-  type = "string"
-  description = "The subnet in which to put your cluster."
-}
 
-variable "securityGroups" {
-  type = "string"
-  description = "The sec. groups in which to put your cluster."
-}
+#variable "subnet" {
+#  type = "string"
+#  description = "The subnet in which to put your cluster."
+#}
+
+#variable "securityGroups" {
+#  type = "string"
+#  description = "The sec. groups in which to put your cluster."
+#}
 
 variable "ami"{
   type = "string"
@@ -51,6 +53,7 @@ variable "ami"{
 variable "SSHKey" {
   type = "string"
   description = "SSH key to use for VMs."
+  deafult="~/.ssh/id_rsa.pub"
 }
 
 variable "master_instance_type" {
@@ -77,14 +80,53 @@ variable "awsRegion" {
   type = "string"
 }
 
-provider "aws" {
-  region = "${var.awsRegion}"
+variable "availability_zones"  {
+  default = "a,c,d"
 }
 
 variable "iam_prefix" {
   type = "string"
   description = "Prefix name for IAM profiles"
 }
+
+variable "vpc_cidr" {
+  type = "string"
+  description = "CIDR for vpckey"
+}
+
+variable "datacenter" {default = "aws-us-east-1"}
+variable "region" {default = "us-east-1"}
+variable "short_name" {default = "kargo"}
+variable "long_name" {default = "kargo"}
+variable "ssh_username" {default = "centos"}
+
+provider "aws" {
+  region = "${var.awsRegion}"
+}
+
+
+module "vpc" {
+  source ="./vpc"
+  availability_zones = "${var.availability_zones}"
+  short_name = "${var.deploymentName}"
+  long_name = "${var.deploymentName}"
+  region = "${var.awsRegion}"
+}
+
+module "ssh-key" {
+  source ="./ssh"
+  ssh_key="${var.SSHKey}"
+  short_name = "${var.deploymentName}"
+}
+
+module "security-groups" {
+  source = "./security_groups"
+  short_name = "${var.deploymentName}"
+  vpc_id = "${module.vpc.vpc_id}"
+  vpc_cidr = "${var.vpc_cidr}"
+}
+
+
 
 resource "aws_iam_instance_profile" "kubernetes_master_profile" {
   name = "${var.iam_prefix}_kubernetes_master_profile"
@@ -191,11 +233,13 @@ resource "aws_instance" "master" {
     count = "${var.numControllers}"
     ami = "${var.ami}"
     instance_type = "${var.master_instance_type}"
-    subnet_id = "${var.subnet}"
-    vpc_security_group_ids = ["${var.securityGroups}"]
-    key_name = "${var.SSHKey}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids), count.index)}"
+    #subnet_id = "${module.vpc.subnet}"
+    vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
+    key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
     iam_instance_profile = "${aws_iam_instance_profile.kubernetes_master_profile.id}"
+	associate_public_ip_address = true
     root_block_device {
       volume_size = "${var.volSizeController}"
     }
@@ -208,10 +252,12 @@ resource "aws_instance" "etcd" {
     count = "${var.numEtcd}"
     ami = "${var.ami}"
     instance_type = "${var.etcd_instance_type}"
-    subnet_id = "${var.subnet}"
-    vpc_security_group_ids = ["${var.securityGroups}"]
-    key_name = "${var.SSHKey}"
+    #subnet_id = "${module.vpc.subnet}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids), count.index)}"
+    vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
+    key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
+	associate_public_ip_address = true
     root_block_device {
       volume_size = "${var.volSizeEtcd}"
     }
@@ -225,11 +271,13 @@ resource "aws_instance" "minion" {
     count = "${var.numNodes}"
     ami = "${var.ami}"
     instance_type = "${var.node_instance_type}"
-    subnet_id = "${var.subnet}"
-    vpc_security_group_ids = ["${var.securityGroups}"]
-    key_name = "${var.SSHKey}"
+    #subnet_id = "${module.vpc.subnet}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids), count.index)}"
+    vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
+    key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
     iam_instance_profile = "${aws_iam_instance_profile.kubernetes_node_profile.id}"
+	associate_public_ip_address = true
     root_block_device {
       volume_size = "${var.volSizeNodes}"
     }
@@ -237,6 +285,7 @@ resource "aws_instance" "minion" {
       Name = "${var.deploymentName}-minion-${count.index + 1}"
     }
 }
+
 
 output "kubernetes_master_profile" {
   value = "${aws_iam_instance_profile.kubernetes_master_profile.id}"
@@ -249,13 +298,23 @@ output "kubernetes_node_profile" {
 output "master-ip" {
     value = "${join(", ", aws_instance.master.*.private_ip)}"
 }
+output "master-public-ip" {
+    value = "${join(", ", aws_instance.master.*.public_ip)}"
+}
 
 output "etcd-ip" {
     value = "${join(", ", aws_instance.etcd.*.private_ip)}"
+}
+
+output "etcd-public-ip" {
+    value = "${join(", ", aws_instance.etcd.*.public_ip)}"
 }
 
 output "minion-ip" {
     value = "${join(", ", aws_instance.minion.*.private_ip)}"
 }
 
+output "minion-public-ip" {
+    value = "${join(", ", aws_instance.minion.*.public_ip)}"
+}
 
