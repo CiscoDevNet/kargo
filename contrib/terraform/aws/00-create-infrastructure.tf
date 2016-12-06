@@ -233,13 +233,13 @@ resource "aws_instance" "master" {
     count = "${var.numControllers}"
     ami = "${var.ami}"
     instance_type = "${var.master_instance_type}"
-    subnet_id = "${element(split(",", module.vpc.subnet_ids), count.index)}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids_private), count.index)}"
     #subnet_id = "${module.vpc.subnet}"
     vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
     key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
     iam_instance_profile = "${aws_iam_instance_profile.kubernetes_master_profile.id}"
-	associate_public_ip_address = true
+	#associate_public_ip_address = true
     root_block_device {
       volume_size = "${var.volSizeController}"
     }
@@ -286,6 +286,29 @@ resource "aws_instance" "minion" {
     }
 }
 
+resource "aws_elb" "kubernetes_api" {
+    name = "kube-api"
+    instances = ["${aws_instance.master.*.id}"]
+    subnets =  ["${split(",",module.vpc.subnet_ids)}"]
+    cross_zone_load_balancing = false
+
+    security_groups = ["${module.security-groups.securityGroup}"]
+
+    listener {
+      lb_port = 443
+      instance_port = 443
+      lb_protocol = "TCP"
+      instance_protocol = "TCP"
+    }
+
+    health_check {
+      healthy_threshold = 2
+      unhealthy_threshold = 2
+      timeout = 15
+      target = "TCP:443"
+      interval = 30
+    }
+}
 
 output "kubernetes_master_profile" {
   value = "${aws_iam_instance_profile.kubernetes_master_profile.id}"
