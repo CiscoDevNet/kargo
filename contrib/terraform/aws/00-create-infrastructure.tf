@@ -223,7 +223,20 @@ resource "aws_iam_role_policy" "kubernetes_node_policy" {
       "Effect": "Allow",
       "Action": "ec2:DetachVolume",
       "Resource": "*"
-    }
+    },
+    {
+       "Effect": "Allow",
+       "Action": [
+	  "ecr:GetAuthorizationToken",
+	  "ecr:BatchCheckLayerAvailability",
+	  "ecr:GetDownloadUrlForLayer",
+	  "ecr:GetRepositoryPolicy",
+	  "ecr:DescribeRepositories",
+	  "ecr:ListImages",
+	  "ecr:BatchGetImage"
+	],
+	"Resource": "*"
+     }
   ]
 }
 EOF
