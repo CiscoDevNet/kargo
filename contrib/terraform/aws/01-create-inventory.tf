@@ -30,6 +30,9 @@ resource "null_resource" "ansible-provision" {
   provisioner "local-exec" {
     command =  "echo \"${join("\n",formatlist("%s ansible_ssh_user=%s", aws_instance.minion.*.private_ip, var.SSHUser))}\" >> inventory"
   }
+  provisioner "local-exec" {
+    command =  "echo \"${join("\n",formatlist("%s ansible_ssh_user=%s", aws_instance.data-minion.*.private_ip, var.SSHUser))}\" >> inventory"
+  }
 
   provisioner "local-exec" {
     command =  "echo \"\n[k8s-cluster:children]\nkube-node\nkube-master\netcd\" >> inventory"
