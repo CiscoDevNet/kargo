@@ -145,3 +145,16 @@ k8s_image_pull_policy: IfNotPresent
 # default packages to install within the cluster
 kpm_packages: []
 #  - name: kube-system/grafana
+
+
+# This is kube api externally accessible DNS endpoint
+# if loadbalancer_apiserver is not defined then this points to local 
+# nginx api with valid entry in /etc/host pointing to nginx
+apiserver_loadbalancer_domain_name: "kube.staging.devnetcloud.com"
+
+apiserver_valid_certs:
+  api_cert_dir: "/home/centos/kube-cert-west"
+  api_cert_file: "apiserver-valid.pem"
+  api_cert_key_file: "apiserver-key-valid.pem"
+  api_cert_ca_file: "apiserver-ca-valid.pem"
+cache_update: false

@@ -30,6 +30,7 @@
     src: manifests/kube-apiserver.manifest.j2
     dest: "{{ kube_manifest_dir }}/kube-apiserver.manifest"
   notify: Master | wait for the apiserver to be running
+  tags: ['cisco']
 
 - meta: flush_handlers
 # Create kube-system namespace

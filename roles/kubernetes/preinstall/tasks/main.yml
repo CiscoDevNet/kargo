@@ -78,7 +78,7 @@
 
 - name: Update package management cache (YUM)
   yum: update_cache=yes name='*'
-  when: ansible_pkg_mgr == 'yum'
+  when: ansible_pkg_mgr == 'yum' and cache_update
 
 - name: Install latest version of python-apt for Debian distribs
   apt: name=python-apt state=latest update_cache=yes cache_valid_time=3600
