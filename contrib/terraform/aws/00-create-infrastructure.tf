@@ -53,7 +53,7 @@ variable "ami"{
 variable "SSHKey" {
   type = "string"
   description = "SSH key to use for VMs."
-  deafult="~/.ssh/id_rsa.pub"
+  default="~/.ssh/id_rsa.pub"
 }
 
 variable "master_instance_type" {

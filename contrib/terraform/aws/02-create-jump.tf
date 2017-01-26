@@ -41,7 +41,7 @@ resource "aws_instance" "jump" {
         "sudo rpm -iUvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
         "sudo yum  install -y python-netaddr ansible git",
         "git clone https://github.com/CiscoDevnet/kargo",
-		"cd kargo; git fetch; git checkout devnet; cd ~"
+		"cd kargo; git fetch; git checkout devnet-test; cd ~"
 		]
         connection{
             user= "${var.ssh_username}"

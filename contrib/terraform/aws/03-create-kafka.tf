@@ -75,8 +75,8 @@ resource "aws_instance" "kafka-instances" {
 resource "aws_volume_attachment" "kafka_att" {
   count = "${length(split(",", var.availability_zones))}"
   device_name = "/dev/sdf"
-  volume_id = "${element(split(",", kafka-volumes), count.index)}"
-  instance_id = "${element(split(",", kafka-instances), count.index)}"
+  volume_id = "${element(aws_ebs_volume.kafka-volumes.*.id, count.index)}"
+  instance_id = "${element(aws_instance.kafka-instances.*.id, count.index)}"
 }
 
 resource "null_resource" "kafka-inventory" {
