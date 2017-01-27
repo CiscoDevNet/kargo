@@ -108,6 +108,21 @@ variable "vpc_cidr" {
   description = "CIDR for vpckey"
 }
 
+variable "cpu_utilization_alarm_threshold" {
+    default = "80"
+    description = "Threshold for CPU Utilization"
+}
+
+variable "cpu_utilization_alarm_period" {
+    default = "120"
+    description = "Period for CPU Utilization"
+}
+
+variable "cpu_utilization_alarm_evaluation_period" {
+    default = "5"
+    description = "Evaluation period for CPU Utilization"
+}
+
 variable "datacenter" {default = "aws-us-east-1"}
 variable "region" {default = "us-east-1"}
 variable "short_name" {default = "kargo"}
@@ -361,15 +376,15 @@ resource "aws_elb" "kubernetes_api" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions" {
-    count = "${var.numDataNodes}"
+    count = "${length(aws_instance.data-minion.*.id)}"
     alarm_name = "terraform-cpu-utilization-data-minions"
     comparison_operator = "GreaterThanOrEqualToThreshold"
-    evaluation_periods = "2"
+    evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "CPUUtilization"
     namespace = "AWS/EC2"
-    period = "120"
+    period =  "${var.cpu_utilization_alarm_period}"
     statistic = "Average"
-    threshold = "80"
+    threshold = "${var.cpu_utilization_alarm_threshold}"
     dimensions = {
         InstanceId = "${element(aws_instance.data-minion.*.id, count.index)}"
     }
@@ -378,15 +393,15 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions" {
-    count = "${var.numNodes}"
+    count = "${length(aws_instance.minion.*.id)}"
     alarm_name = "terraform-cpu-utilization-minions"
     comparison_operator = "GreaterThanOrEqualToThreshold"
-    evaluation_periods = "2"
+    evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "CPUUtilization"
     namespace = "AWS/EC2"
-    period = "120"
+    period =  "${var.cpu_utilization_alarm_period}"
     statistic = "Average"
-    threshold = "80"
+    threshold =  "${var.cpu_utilization_alarm_threshold}"
     dimensions = {
         InstanceId = "${element(aws_instance.minion.*.id, count.index)}"
     }
@@ -395,15 +410,15 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-master" {
-    count = "${var.numNodes}"
+    count = "${length(aws_instance.master.*.id)}"
     alarm_name = "terraform-cpu-utilization-master"
     comparison_operator = "GreaterThanOrEqualToThreshold"
-    evaluation_periods = "2"
+    evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "CPUUtilization"
     namespace = "AWS/EC2"
-    period = "120"
+    period =  "${var.cpu_utilization_alarm_period}"
     statistic = "Average"
-    threshold = "80"
+    threshold =  "${var.cpu_utilization_alarm_threshold}"
     dimensions = {
         InstanceId = "${element(aws_instance.master.*.id, count.index)}"
     }
