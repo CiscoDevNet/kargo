@@ -3,8 +3,8 @@
 - set_fact: kube_apiserver_address="{{ ip | default(ansible_default_ipv4['address']) }}"
 - set_fact: kube_apiserver_access_address="{{ access_ip | default(kube_apiserver_address) }}"
 - set_fact: is_kube_master="{{ inventory_hostname in groups['kube-master'] }}"
-#cisco- set_fact: first_kube_master="{{ hostvars[groups['kube-master'][0]]['access_ip'] | default(hostvars[groups['kube-master'][0]]['ip'] | default(hostvars[groups['kube-master'][0]]['ansible_default_ipv4']['address'])) }}"
-- set_fact: first_kube_master="{{ hostvars[groups['kube-master'][0]]['access_ip'] | default(hostvars[groups['kube-master'][0]]['ip']) }}"
+- set_fact: first_kube_master="{{ hostvars[groups['kube-master'][0]]['access_ip'] | default(hostvars[groups['kube-master'][0]]['ip'] | default(hostvars[groups['kube-master'][0]]['ansible_default_ipv4']['address'])) }}"
+#- set_fact: first_kube_master="{{ hostvars[groups['kube-master'][0]]['access_ip'] | default(hostvars[groups['kube-master'][0]]['ip']) }}"
 - set_fact:
     loadbalancer_apiserver_localhost: false
   when: loadbalancer_apiserver is defined
