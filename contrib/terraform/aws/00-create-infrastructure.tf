@@ -62,7 +62,7 @@ variable "ami"{
 variable "SSHKey" {
   type = "string"
   description = "SSH key to use for VMs."
-  deafult="~/.ssh/id_rsa.pub"
+  default="~/.ssh/id_rsa.pub"
 }
 
 variable "master_instance_type" {
@@ -358,6 +358,57 @@ resource "aws_elb" "kubernetes_api" {
       target = "TCP:443"
       interval = 30
     }
+}
+
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions" {
+    count = "${var.numDataNodes}"
+    alarm_name = "terraform-cpu-utilization-data-minions"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods = "2"
+    metric_name = "CPUUtilization"
+    namespace = "AWS/EC2"
+    period = "120"
+    statistic = "Average"
+    threshold = "80"
+    dimensions = {
+        InstanceId = "${element(aws_instance.data-minion.*.id, count.index)}"
+    }
+    alarm_description = "This metric monitor ec2 cpu utilization"
+    alarm_actions = ["arn:aws:sns:us-west-2:512583958123:High-CPU-Utilization"]
+}
+
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions" {
+    count = "${var.numNodes}"
+    alarm_name = "terraform-cpu-utilization-minions"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods = "2"
+    metric_name = "CPUUtilization"
+    namespace = "AWS/EC2"
+    period = "120"
+    statistic = "Average"
+    threshold = "80"
+    dimensions = {
+        InstanceId = "${element(aws_instance.minion.*.id, count.index)}"
+    }
+    alarm_description = "This metric monitor ec2 cpu utilization"
+    alarm_actions = ["arn:aws:sns:us-west-2:512583958123:High-CPU-Utilization"]
+}
+
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-master" {
+    count = "${var.numNodes}"
+    alarm_name = "terraform-cpu-utilization-master"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods = "2"
+    metric_name = "CPUUtilization"
+    namespace = "AWS/EC2"
+    period = "120"
+    statistic = "Average"
+    threshold = "80"
+    dimensions = {
+        InstanceId = "${element(aws_instance.master.*.id, count.index)}"
+    }
+    alarm_description = "This metric monitor ec2 cpu utilization"
+    alarm_actions = ["arn:aws:sns:us-west-2:512583958123:High-CPU-Utilization"]
 }
 
 output "kubernetes_master_profile" {
