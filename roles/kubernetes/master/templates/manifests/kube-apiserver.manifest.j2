@@ -25,12 +25,13 @@ spec:
     - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota
     - --service-cluster-ip-range={{ kube_service_addresses }}
     - --service-node-port-range={{ kube_apiserver_node_port_range }}
-    - --client-ca-file={{ kube_cert_dir }}/ca.pem
     - --basic-auth-file={{ kube_users_dir }}/known_users.csv
 {% if apiserver_valid_certs is defined %}
+    - --client-ca-file={{ kube_cert_dir }}/apiserver-ca-valid.pem
     - --tls-cert-file={{ kube_cert_dir }}/apiserver-valid.pem
     - --tls-private-key-file={{ kube_cert_dir }}/apiserver-key-valid.pem
 {% else %}
+    - --client-ca-file={{ kube_cert_dir }}/ca.pem
     - --tls-cert-file={{ kube_cert_dir }}/apiserver.pem
     - --tls-private-key-file={{ kube_cert_dir }}/apiserver-key.pem
 {% endif %}
