@@ -18,6 +18,10 @@ variable "numNodes" {
   description = "Desired # of nodes."
 }
 
+variable "numDataNodes" {
+  type = "string"
+  description = "Desired # of Data nodes."
+}
 
 variable "volSizeController" {
   type = "string"
@@ -32,6 +36,11 @@ variable "volSizeEtcd" {
 variable "volSizeNodes" {
   type = "string"
   description = "Volume size for nodes (GB)."
+}
+
+variable "volSizeDataNodes" {
+  type = "string"
+  description = "Volume size for Data nodes (GB)."
 }
 
 
@@ -69,6 +78,11 @@ variable "etcd_instance_type" {
 variable "node_instance_type" {
   type = "string"
   description = "Size of VM to use for nodes."
+}
+
+variable "data_node_instance_type" {
+  type = "string"
+  description = "Size of VM to use for data nodes."
 }
 
 variable "terminate_protect" {
@@ -223,7 +237,20 @@ resource "aws_iam_role_policy" "kubernetes_node_policy" {
       "Effect": "Allow",
       "Action": "ec2:DetachVolume",
       "Resource": "*"
-    }
+    },
+    {
+       "Effect": "Allow",
+       "Action": [
+	  "ecr:GetAuthorizationToken",
+	  "ecr:BatchCheckLayerAvailability",
+	  "ecr:GetDownloadUrlForLayer",
+	  "ecr:GetRepositoryPolicy",
+	  "ecr:DescribeRepositories",
+	  "ecr:ListImages",
+	  "ecr:BatchGetImage"
+	],
+	"Resource": "*"
+     }
   ]
 }
 EOF
@@ -240,6 +267,7 @@ resource "aws_instance" "master" {
     disable_api_termination = "${var.terminate_protect}"
     iam_instance_profile = "${aws_iam_instance_profile.kubernetes_master_profile.id}"
 	#associate_public_ip_address = true
+	monitoring = true
     root_block_device {
       volume_size = "${var.volSizeController}"
     }
@@ -258,6 +286,7 @@ resource "aws_instance" "etcd" {
     key_name = "${module.ssh-key.ssh_key_name}"
     disable_api_termination = "${var.terminate_protect}"
 	#associate_public_ip_address = true
+	monitoring = true
     root_block_device {
       volume_size = "${var.volSizeEtcd}"
     }
@@ -278,11 +307,32 @@ resource "aws_instance" "minion" {
     disable_api_termination = "${var.terminate_protect}"
     iam_instance_profile = "${aws_iam_instance_profile.kubernetes_node_profile.id}"
 	#associate_public_ip_address = true
+	monitoring = true
     root_block_device {
       volume_size = "${var.volSizeNodes}"
     }
     tags {
       Name = "${var.deploymentName}-minion-${count.index + 1}"
+    }
+}
+
+resource "aws_instance" "data-minion" {
+    count = "${var.numDataNodes}"
+    ami = "${var.ami}"
+    instance_type = "${var.data_node_instance_type}"
+    #subnet_id = "${module.vpc.subnet}"
+    subnet_id = "${element(split(",", module.vpc.subnet_ids_private), count.index)}"
+    vpc_security_group_ids = ["${module.security-groups.securityGroup}"]
+    key_name = "${module.ssh-key.ssh_key_name}"
+    disable_api_termination = "${var.terminate_protect}"
+    iam_instance_profile = "${aws_iam_instance_profile.kubernetes_node_profile.id}"
+	#associate_public_ip_address = true
+	monitoring = true
+    root_block_device {
+      volume_size = "${var.volSizeDataNodes}"
+    }
+    tags {
+      Name = "${var.deploymentName}-data-minion-${count.index + 1}"
     }
 }
 
@@ -339,5 +389,13 @@ output "minion-ip" {
 
 output "minion-public-ip" {
     value = "${join(", ", aws_instance.minion.*.public_ip)}"
+}
+
+output "data-minion-ip" {
+    value = "${join(", ", aws_instance.data-minion.*.private_ip)}"
+}
+
+output "data-minion-public-ip" {
+    value = "${join(", ", aws_instance.data-minion.*.public_ip)}"
 }
 
