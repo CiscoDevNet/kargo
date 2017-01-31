@@ -39,7 +39,8 @@ resource "aws_instance" "jump" {
     provisioner "remote-exec"{
         inline = [
         "sudo rpm -iUvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
-        "sudo yum  install -y python-netaddr ansible git",
+        "sudo yum  install -y python-netaddr git",
+        "sudo rpm -i ftp://rpmfind.net/linux/fedora-secondary/development/rawhide/Everything/s390x/os/Packages/a/ansible-2.2.0.0-4.fc26.noarch.rpm",
         "git clone https://github.com/CiscoDevnet/kargo",
 		"cd kargo; git fetch; git checkout devnet-test; cd ~"
 		]

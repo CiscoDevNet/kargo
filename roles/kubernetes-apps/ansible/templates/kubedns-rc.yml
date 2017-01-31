@@ -52,10 +52,14 @@ spec:
           # only setup the /readiness HTTP server once that's available.
           initialDelaySeconds: 30
           timeoutSeconds: 5
-        args:
+		{% if apiserver_valid_certs is defined and apiserver_loadbalancer_domain_name is defined %}
+        command: [ "/bin/sh", "-c", "/bin/echo \"${KUBERNETES_SERVICE_HOST}\"  kube.staging.devnetcloud.com >>/etc/hosts; /kube-dns --domain=cluster.local. --dns-port=10053 --kubecfg-file=/etc/kubernetes/node-kubeconfig.yaml"]
+		{% else %}
+		args:
         # command = "/kube-dns"
         - --domain={{ dns_domain }}.
         - --dns-port=10053
+		{% endif %}
         ports:
         - containerPort: 10053
           name: dns-local
