@@ -1,4 +1,4 @@
-deploymentName="east-kargo-k8s"
+deploymentName="east2-kargo-k8s"
 
 numControllers="3"
 numEtcd="3"
@@ -28,7 +28,7 @@ jump_instance_type="t2.medium"
 
 terminate_protect="false"
 
-iam_prefix="east-kargo-k8s"
+iam_prefix="east2-kargo-k8s"
 vpc_cidr="10.1.0.0/21"
 
 #kafka varaibles

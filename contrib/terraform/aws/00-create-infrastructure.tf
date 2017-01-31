@@ -248,9 +248,20 @@ resource "aws_iam_role_policy" "kubernetes_node_policy" {
 	  "ecr:DescribeRepositories",
 	  "ecr:ListImages",
 	  "ecr:BatchGetImage"
-	],
-	"Resource": "*"
-     }
+	  ],
+	  "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "route53:ListHostedZones",
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
   ]
 }
 EOF
