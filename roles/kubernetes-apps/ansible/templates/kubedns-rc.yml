@@ -52,14 +52,22 @@ spec:
           # only setup the /readiness HTTP server once that's available.
           initialDelaySeconds: 30
           timeoutSeconds: 5
-		{% if apiserver_valid_certs is defined and apiserver_loadbalancer_domain_name is defined %}
-        command: [ "/bin/sh", "-c", "/bin/echo \"${KUBERNETES_SERVICE_HOST}\"  kube.staging.devnetcloud.com >>/etc/hosts; /kube-dns --domain=cluster.local. --dns-port=10053 --kubecfg-file=/etc/kubernetes/node-kubeconfig.yaml"]
-		{% else %}
-		args:
+{% if apiserver_valid_certs is defined and apiserver_loadbalancer_domain_name is defined %}
+        command: [ "/bin/sh","-c"] 
+        args: 
+        -  "/kube-dns --domain=cluster.local. --dns-port=10053 --kubecfg-file=/etc/kubernetes/node-kubeconfig-ip.yaml"
+{% else %}
+        args:
         # command = "/kube-dns"
         - --domain={{ dns_domain }}.
         - --dns-port=10053
-		{% endif %}
+{% endif %}
+{% if apiserver_valid_certs is defined and apiserver_loadbalancer_domain_name is defined %}
+        volumeMounts:
+        - name: "kubeconfig"
+          mountPath: "/etc/kubernetes/"
+          readOnly: true
+{% endif %}
         ports:
         - containerPort: 10053
           name: dns-local
@@ -105,3 +113,9 @@ spec:
         - containerPort: 8080
           protocol: TCP
       dnsPolicy: Default  # Don't use cluster DNS.
+{% if apiserver_valid_certs is defined and apiserver_loadbalancer_domain_name is defined %}
+      volumes:
+      - name: "kubeconfig"
+        hostPath:
+          path: "/etc/kubernetes/"
+{% endif %}
