@@ -1,38 +1,38 @@
-deploymentName="east2-kargo-k8s"
+# Warning this is prod terrform config
+deploymentName="east2-prod-k8s"
+iam_prefix="east2-prod-k8s"
 
 numControllers="3"
 numEtcd="3"
-numNodes="6"
+numNodes="7"
 numDataNodes="3"
 numJump="1"
+numKafka="3"
 
 volSizeController="200"
 volSizeEtcd="200"
 volSizeNodes="200"
 volSizeDataNodes="200"
 volSizeJump="100"
+volumeKafkaSize="300"
+volSizeRootKafka="100"
 
-awsRegion="us-east-2"
-ami="ami-02290c67" # Cisco Hardened image 
+awsRegion="us-west-2"
+ami="ami-af2883cf" # Cisco Hardened image 
 SSHUser="centos"
-SSHKey="/Users/neeleshpateriya/.ssh/id_rsa_devnet.pub"
-SSHPrivKey="/Users/neeleshpateriya/.ssh/id_rsa_devnet"
+SSHKey="/Users/neeleshpateriya/.ssh/id_rsa_devnet_prod.pub"
+SSHPrivKey="/Users/neeleshpateriya/.ssh/id_rsa_devnet_prod"
 availability_zones="a,b,c"
 
-master_instance_type="m4.large"
-etcd_instance_type="m4.large"
-node_instance_type="m4.large"
-data_node_instance_type="m4.large"
-jump_instance_type="t2.medium"
+master_instance_type="c4.xlarge"
+etcd_instance_type="c4.xlarge"
+node_instance_type="c4.xlarge"
+data_node_instance_type="c4.xlarge"
+kafka_instance_type="c4.large"
+jump_instance_type="m3.medium"
 
 
 terminate_protect="false"
 
-iam_prefix="east2-kargo-k8s"
 vpc_cidr="10.1.0.0/21"
 
-#kafka varaibles
-volumeKafkaSize="300"
-volSizeRootKafka="20"
-numKafka="3"
-kafka_instance_type="m4.large"
