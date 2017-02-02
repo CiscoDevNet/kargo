@@ -28,7 +28,7 @@ master_instance_type="c4.xlarge"
 etcd_instance_type="c4.xlarge"
 node_instance_type="c4.xlarge"
 data_node_instance_type="c4.xlarge"
-kafka_instance_type="c4.large"
+kafka_instance_type="c4.xlarge"
 jump_instance_type="m3.medium"
 
 
