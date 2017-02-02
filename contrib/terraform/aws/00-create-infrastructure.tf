@@ -62,7 +62,7 @@ variable "ami"{
 variable "SSHKey" {
   type = "string"
   description = "SSH key to use for VMs."
-  deafult="~/.ssh/id_rsa.pub"
+  default="~/.ssh/id_rsa.pub"
 }
 
 variable "master_instance_type" {
@@ -248,9 +248,20 @@ resource "aws_iam_role_policy" "kubernetes_node_policy" {
 	  "ecr:DescribeRepositories",
 	  "ecr:ListImages",
 	  "ecr:BatchGetImage"
-	],
-	"Resource": "*"
-     }
+	  ],
+	  "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "route53:ListHostedZones",
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
   ]
 }
 EOF
