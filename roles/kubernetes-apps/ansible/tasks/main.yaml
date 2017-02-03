@@ -4,6 +4,10 @@
   with_items:
     - {file: kubedns-rc.yml, type: rc}
     - {file: kubedns-svc.yml, type: svc}
+    - {file: k8s-dashboard.yml, type: rc}
+    - {file: k8s-dashboard-svc.yml, type: rc}
+    # This is not deploying at this does not have way to point k8s server to alternate endpoint
+    #- {file: route53-k8s.yml, type: rc}
   register: manifests
   when: inventory_hostname == groups['kube-master'][0]
 
