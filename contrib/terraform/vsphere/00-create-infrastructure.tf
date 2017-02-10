@@ -1,13 +1,12 @@
 # Configuration for VSphere
 
 # - VSPHERE - #
-variable "vsphere_user"
-variable "vsphere_password"
-variable "vsphere_server"
+variable "vsphere_user" {default = "root"}
+variable "vsphere_password" {default = "P@ssw0rd1"}
+variable "vsphere_server" {default = "10.194.104.51"}
 variable "vsphere_allow_unverified_ssl" {default = true}
-variable "ssh_user"
-variable "ssh_key"
-
+variable "ssh_user" {default = "root"}
+variable "ssh_key" {default = "/Users/amoghada/DevNet/kargo/contrib/terraform/vsphere/devnet-key.pem"}
 
 # - MASTER - #
 variable "master_count" {default = 3}
@@ -15,9 +14,9 @@ variable "master_prefix" {default = "kube"}
 variable "master_vcpu" {default = 4}
 variable "master_memory" {default = 6144}
 variable "master_network_interface_label" {default = "VM Network"}
-variable "master_resource_pool"
-variable "master_disk_datastore"
-variable "master_disk_template"
+variable "master_resource_pool" {default = "*/Resources/kube-lab"}
+variable "master_disk_datastore" {default = "datastore2"}
+variable "master_disk_template" {default = "DEV/kube-template-0.6"}
 
 # - WORKER - #
 variable "worker_count" {default = 6}
@@ -25,9 +24,9 @@ variable "worker_prefix" {default = "kube"}
 variable "worker_vcpu" {default = 4}
 variable "worker_memory" {default = 6144}
 variable "worker_network_interface_label" {default = "VM Network"}
-variable "worker_resource_pool"
-variable "worker_disk_datastore"
-variable "worker_disk_template"
+variable "worker_resource_pool" {default = "*/Resources/kube-lab"}
+variable "worker_disk_datastore" {default = "datastore2"}
+variable "worker_disk_template" {default = "DEV/kube-template-0.6"}
 
 # - ETCD - #
 variable "etcd_count" {default = 3}
@@ -35,9 +34,9 @@ variable "etcd_prefix" {default = "kube"}
 variable "etcd_vcpu" {default = 4}
 variable "etcd_memory" {default = 6144}
 variable "etcd_network_interface_label" {default = "VM Network"}
-variable "etcd_resource_pool"
-variable "etcd_disk_datastore"
-variable "etcd_disk_template"
+variable "etcd_resource_pool" {default = "*/Resources/kube-lab"}
+variable "etcd_disk_datastore" {default = "datastore2"}
+variable "etcd_disk_template" {default = "DEV/kube-template-0.6"}
 
 provider "vsphere" {
     user           = "${var.vsphere_user}"
