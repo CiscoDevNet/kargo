@@ -100,11 +100,19 @@ resource "null_resource" "kafka-inventory" {
 
   depends_on = ["aws_instance.kafka-instances"]
 
-  ##Create Master Inventory
+  ## Create [zk] Kafka Inventory
   provisioner "local-exec" {
-    command =  "echo \"[kafka-nodes]\" > kafka-inventory"
+    command =  "echo \"[zk]\" > kafka-inventory"
   }
   provisioner "local-exec" {
-    command =  "echo \"${join("\n",formatlist("%s ansible_ssh_user=%s", aws_instance.kafka-instances.*.private_ip, var.SSHUser))}\" >> kafka-inventory"
+    command =  "echo \"${join("\n",formatlist("%s ip=%s ansible_host=%s", aws_instance.kafka-instances.*.private_ip, aws_instance.kafka-instances.*.private_ip, aws_instance.kafka-instances.*.private_ip))}\" >> kafka-inventory"
+  }
+
+  ## Create [kafka] Kafka Inventory
+  provisioner "local-exec" {
+    command =  "echo \"[kafka]\" > kafka-inventory"
+  }
+  provisioner "local-exec" {
+    command =  "echo \"${join("\n",formatlist("%s ip=%s ansible_host=%s", aws_instance.kafka-instances.*.private_ip, aws_instance.kafka-instances.*.private_ip, aws_instance.kafka-instances.*.private_ip))}\" >> kafka-inventory"
   }
 }
