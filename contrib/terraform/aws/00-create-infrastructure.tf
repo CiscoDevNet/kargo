@@ -430,6 +430,59 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-master" {
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions-1" {
+    count = "${var.numDataNodes}"
+    alarm_name = "terraform-status-check-data-minions"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
+    metric_name = "StatusCheckFailed"
+    namespace = "AWS/EC2"
+    period =  "${var.cpu_utilization_alarm_period}"
+    statistic = "Average"
+    threshold = "1"
+    dimensions = {
+        InstanceId = "${element(aws_instance.data-minion.*.id, count.index)}"
+    }
+    alarm_description = "This metric monitor ec2 instance status check"
+    alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+}
+
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions-1" {
+    count = "${var.numNodes}"
+    alarm_name = "terraform-status-check-minions"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
+    metric_name = "StatusCheckFailed"
+    namespace = "AWS/EC2"
+    period =  "${var.cpu_utilization_alarm_period}"
+    statistic = "Average"
+    threshold =  "1"
+    dimensions = {
+        InstanceId = "${element(aws_instance.minion.*.id, count.index)}"
+    }
+    alarm_description = "This metric monitor ec2 instance status check"
+    alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+}
+
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-master-1" {
+    count = "${var.numControllers}"
+    alarm_name = "terraform-status-check-master"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
+    metric_name = "StatusCheckFailed"
+    namespace = "AWS/EC2"
+    period =  "${var.cpu_utilization_alarm_period}"
+    statistic = "Average"
+    threshold =  "1"
+    dimensions = {
+        InstanceId = "${element(aws_instance.master.*.id, count.index)}"
+    }
+    alarm_description = "This metric monitor ec2 instance status check"
+    alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+}
+
+
+
 output "kubernetes_master_profile" {
   value = "${aws_iam_instance_profile.kubernetes_master_profile.id}"
 }
