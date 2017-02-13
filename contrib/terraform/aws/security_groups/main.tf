@@ -11,6 +11,9 @@ resource "aws_security_group" "kargo" {
   tags {
     KubernetesCluster = "${var.short_name}"
   }
+  lifecycle {
+        ignore_changes = ["ingress"]
+  }
 
   ingress { # SSH
     from_port = 22

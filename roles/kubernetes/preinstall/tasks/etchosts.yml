@@ -27,6 +27,7 @@
     regexp: '^127.0.0.1.*$'
     state: present
     backup: yes
+  when:  apiserver_loadbalancer_domain_name is not defined
 
 - name: Hosts | localhost ipv6 in hosts file
   lineinfile:
@@ -35,3 +36,12 @@
     regexp: '^::1.*$'
     state: present
     backup: yes
+
+- name: Hosts | localhost ipv4 in hosts file
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1 localhost localhost.localdomain {{ apiserver_loadbalancer_domain_name }}"
+    regexp: '^127.0.0.1.*$'
+    state: present
+    backup: yes
+  when:  apiserver_loadbalancer_domain_name is defined and loadbalancer_apiserver is not defined

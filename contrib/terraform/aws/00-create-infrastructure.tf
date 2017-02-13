@@ -263,9 +263,20 @@ resource "aws_iam_role_policy" "kubernetes_node_policy" {
 	  "ecr:DescribeRepositories",
 	  "ecr:ListImages",
 	  "ecr:BatchGetImage"
-	],
-	"Resource": "*"
-     }
+	  ],
+	  "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "route53:ListHostedZones",
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
   ]
 }
 EOF
@@ -381,7 +392,7 @@ resource "aws_sns_topic" "alarm_sns" {
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions" {
     count = "${var.numDataNodes}"
-    alarm_name = "terraform-cpu-utilization-data-minions"
+    alarm_name = "terraform-cpu-utilization-data-minions-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
     evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "CPUUtilization"
@@ -398,7 +409,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions" {
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions" {
     count = "${var.numNodes}"
-    alarm_name = "terraform-cpu-utilization-minions"
+    alarm_name = "terraform-cpu-utilization-minions-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
     evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "CPUUtilization"
@@ -415,7 +426,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions" {
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-master" {
     count = "${var.numControllers}"
-    alarm_name = "terraform-cpu-utilization-master"
+    alarm_name = "terraform-cpu-utilization-master-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
     evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "CPUUtilization"
@@ -481,7 +492,22 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-master-1" {
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
-
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-etcd" {
+    count = "${var.numEtcd}"
+    alarm_name = "terraform-cpu-utilization-etcd-${count.index}"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
+    metric_name = "CPUUtilization"
+    namespace = "AWS/EC2"
+    period =  "${var.cpu_utilization_alarm_period}"
+    statistic = "Average"
+    threshold =  "${var.cpu_utilization_alarm_threshold}"
+    dimensions = {
+        InstanceId = "${element(aws_instance.etcd.*.id, count.index)}"
+    }
+    alarm_description = "This metric monitor ec2 cpu utilization"
+    alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+}
 
 output "kubernetes_master_profile" {
   value = "${aws_iam_instance_profile.kubernetes_master_profile.id}"

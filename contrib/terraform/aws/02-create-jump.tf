@@ -39,9 +39,10 @@ resource "aws_instance" "jump" {
     provisioner "remote-exec"{
         inline = [
         "sudo rpm -iUvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
-        "sudo yum  install -y python-netaddr ansible git",
+        "sudo yum  install -y python-netaddr git",
+        "sudo yum install -y ftp://rpmfind.net/linux/fedora-secondary/development/rawhide/Everything/s390x/os/Packages/a/ansible-2.2.0.0-4.fc26.noarch.rpm",
         "git clone https://github.com/CiscoDevnet/kargo",
-		"cd kargo; git fetch; git checkout devnet; cd ~"
+		"cd kargo; git fetch; git checkout tags/devnet-prod_02_07; cd ~"
 		]
         connection{
             user= "${var.ssh_username}"
@@ -66,8 +67,8 @@ resource "aws_instance" "jump" {
 	}
 	provisioner "remote-exec"{
        inline = [
-        "chmod 600 ~/.ssh/id_rsa",
-        "sudo yum  install -y python-netaddr ansible git"#,
+        "chmod 600 ~/.ssh/id_rsa"#,
+        #"sudo yum  install -y python-netaddr ansible git"#,
         #"ANSIBLE_CONFIG=~/kargo/ansible.cfg ansible-playbook  -i inventory -e @kargo/inventory/group_vars/all.yml kargo/cluster.yml --become"
 		]
         connection{

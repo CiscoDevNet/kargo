@@ -14,6 +14,10 @@
   notify:
     - restart kubelet
 
+- name: write the kubecfg-ip (auth) file for kubelet
+  template: src=node-kubeconfig-ip.yaml.j2 dest={{ kube_config_dir }}/node-kubeconfig-ip.yaml backup=yes
+  tags: [ciscocfg]
+
 - name: Write proxy manifest
   template:
     src: manifests/kube-proxy.manifest.j2
