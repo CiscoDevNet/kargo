@@ -16,11 +16,12 @@ spec:
     - controller-manager
     - --master={{ kube_apiserver_endpoint }}
     - --leader-elect=true
-    - --service-account-private-key-file={{ kube_cert_dir }}/apiserver-key.pem
 {% if apiserver_valid_certs is defined %}
     - --root-ca-file={{ kube_cert_dir }}/apiserver-ca-valid.pem
+    - --service-account-private-key-file={{ kube_cert_dir }}/apiserver-key-valid.pem
 {% else %}
     - --root-ca-file={{ kube_cert_dir }}/ca.pem
+    - --service-account-private-key-file={{ kube_cert_dir }}/apiserver-key.pem
 {% endif %}
     - --enable-hostpath-provisioner={{ kube_hostpath_dynamic_provisioner }}
     - --v={{ kube_log_level | default('2') }}
