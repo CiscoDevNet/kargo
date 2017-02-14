@@ -443,7 +443,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-master" {
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions-1" {
     count = "${var.numDataNodes}"
-    alarm_name = "terraform-status-check-data-minions"
+    alarm_name = "terraform-status-check-data-minions-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
     evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "StatusCheckFailed"
@@ -460,7 +460,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions-1" {
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions-1" {
     count = "${var.numNodes}"
-    alarm_name = "terraform-status-check-minions"
+    alarm_name = "terraform-status-check-minions-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
     evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "StatusCheckFailed"
@@ -477,7 +477,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions-1" {
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-master-1" {
     count = "${var.numControllers}"
-    alarm_name = "terraform-status-check-master"
+    alarm_name = "terraform-status-check-master-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
     evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "StatusCheckFailed"
