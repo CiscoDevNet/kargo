@@ -441,7 +441,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-master" {
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
-resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions-1" {
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions-statuscheck" {
     count = "${var.numDataNodes}"
     alarm_name = "terraform-status-check-data-minions-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -458,7 +458,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions-1" {
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
-resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions-1" {
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions-statuscheck" {
     count = "${var.numNodes}"
     alarm_name = "terraform-status-check-minions-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -475,7 +475,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions-1" {
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
-resource "aws_cloudwatch_metric_alarm" "metric-alarm-master-1" {
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-master-statuscheck" {
     count = "${var.numControllers}"
     alarm_name = "terraform-status-check-master-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -492,9 +492,9 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-master-1" {
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
-resource "aws_cloudwatch_metric_alarm" "metric-alarm-etcd-1" {
+resource "aws_cloudwatch_metric_alarm" "metric-alarm-etcd-statuscheck" {
     count = "${var.numEtcd}"
-    alarm_name = "terraform-cpu-utilization-etcd-${count.index}"
+    alarm_name = "terraform-status-check-etcd-${count.index}"
     comparison_operator = "GreaterThanOrEqualToThreshold"
     evaluation_periods =  "${var.cpu_utilization_alarm_evaluation_period}"
     metric_name = "StatusCheckFailed"
