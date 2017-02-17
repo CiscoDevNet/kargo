@@ -405,6 +405,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions" {
     }
     alarm_description = "This metric monitor ec2 cpu utilization"
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+    insufficient_data_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions" {
@@ -422,6 +423,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions" {
     }
     alarm_description = "This metric monitor ec2 cpu utilization"
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+    insufficient_data_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-master" {
@@ -439,6 +441,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-master" {
     }
     alarm_description = "This metric monitor ec2 cpu utilization"
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+    insufficient_data_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions-1" {
@@ -456,6 +459,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-data-minions-1" {
     }
     alarm_description = "This metric monitor ec2 instance status check"
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+    insufficient_data_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions-1" {
@@ -473,6 +477,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-minions-1" {
     }
     alarm_description = "This metric monitor ec2 instance status check"
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+    insufficient_data_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-master-1" {
@@ -490,6 +495,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-master-1" {
     }
     alarm_description = "This metric monitor ec2 instance status check"
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+    insufficient_data_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "metric-alarm-etcd-1" {
@@ -507,6 +513,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-etcd-1" {
     }
     alarm_description = "This metric monitor ec2 instance status check"
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+    insufficient_data_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
 
@@ -525,6 +532,7 @@ resource "aws_cloudwatch_metric_alarm" "metric-alarm-etcd" {
     }
     alarm_description = "This metric monitor ec2 cpu utilization"
     alarm_actions = ["${aws_sns_topic.alarm_sns.arn}"]
+    insufficient_data_actions = ["${aws_sns_topic.alarm_sns.arn}"]
 }
 
 output "kubernetes_master_profile" {
