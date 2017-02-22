@@ -353,6 +353,9 @@ resource "aws_instance" "minion" {
     tags {
       Name = "${var.deploymentName}-minion-${count.index + 1}"
     }
+    lifecycle {
+      ignore_changes = ["ebs_optimized"]
+    }
 }
 
 resource "aws_instance" "data-minion" {
@@ -372,6 +375,9 @@ resource "aws_instance" "data-minion" {
     }
     tags {
       Name = "${var.deploymentName}-data-minion-${count.index + 1}"
+    }
+    lifecycle {
+      ignore_changes = ["ebs_optimized"]
     }
 }
 
