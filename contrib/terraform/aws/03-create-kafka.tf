@@ -110,7 +110,7 @@ resource "null_resource" "kafka-inventory" {
 
   ## Create [kafka] Kafka Inventory
   provisioner "local-exec" {
-    command =  "echo \"[kafka]\" > kafka-inventory"
+    command =  "echo \"[kafka]\" >> kafka-inventory"
   }
   provisioner "local-exec" {
     command =  "echo \"${join("\n",formatlist("%s ip=%s ansible_host=%s", aws_instance.kafka-instances.*.private_ip, aws_instance.kafka-instances.*.private_ip, aws_instance.kafka-instances.*.private_ip))}\" >> kafka-inventory"
